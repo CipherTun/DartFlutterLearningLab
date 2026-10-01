@@ -1,0 +1,3 @@
+import 'package:flutter/material.dart';
+import '../exercises/exercise.dart';
+class ProjectsScreen extends StatelessWidget { final List<Exercise> exercises; const ProjectsScreen({super.key, required this.exercises}); @override Widget build(BuildContext context)=>CustomScrollView(slivers:[const SliverAppBar.large(title:Text('Projects')),SliverPadding(padding:const EdgeInsets.all(16),sliver:SliverList(delegate:SliverChildListDelegate([FilledButton.icon(onPressed:(){},icon:const Icon(Icons.create_new_folder),label:const Text('New project')),const SizedBox(height:16),...exercises.map((e)=>Card(child:ListTile(leading:Icon(e.language=='Flutter'?Icons.phone_android:Icons.code),title:Text(e.title),subtitle:Text(e.language),trailing:const Icon(Icons.chevron_right))))])))]); }

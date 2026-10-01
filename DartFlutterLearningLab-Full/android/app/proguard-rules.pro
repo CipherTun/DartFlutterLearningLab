@@ -1,0 +1,2 @@
+-keep class com.ciphertun.learninglab.runtime.** { *; }
+-keep class com.ciphertun.learninglab.project.** { *; }

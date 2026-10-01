@@ -1,0 +1,8 @@
+.gradle/
+.idea/
+build/
+android/app/build/
+flutter/.dart_tool/
+flutter/build/
+*.iml
+.DS_Store

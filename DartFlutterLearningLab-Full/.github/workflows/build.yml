@@ -1,0 +1,28 @@
+name: Build Dart Flutter Learning Lab
+on: {workflow_dispatch: {}, push: {branches: [main, dev]}}
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: {distribution: temurin, java-version: '17'}
+      - uses: android-actions/setup-android@v3
+      - uses: gradle/actions/setup-gradle@v4
+        with: {gradle-version: '8.13'}
+      - run: sdkmanager 'platform-tools' 'platforms;android-35' 'build-tools;35.0.0'
+      - run: gradle :android:app:assembleDebug --no-daemon
+      - uses: actions/upload-artifact@v4
+        with: {name: dart-flutter-learning-lab-android-debug, path: android/app/build/outputs/apk/debug/*.apk}
+  flutter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with: {flutter-version: '3.47.5', channel: stable, cache: true}
+      - working-directory: flutter
+        run: flutter pub get
+      - working-directory: flutter
+        run: flutter analyze
+      - working-directory: flutter
+        run: flutter test
