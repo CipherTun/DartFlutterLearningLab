@@ -1,28 +1,65 @@
 name: Build Dart Flutter Learning Lab
-on: {workflow_dispatch: {}, push: {branches: [main, dev]}}
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - dev
+
 jobs:
   android:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
-        with: {distribution: temurin, java-version: '17'}
-      - uses: gradle/actions/setup-gradle@v4
-        with: {gradle-version: '8.13'}
-      - run: yes | sdkmanager --licenses >/dev/null 2>&1 || true
-      - run: sdkmanager 'platform-tools' 'platforms;android-35' 'build-tools;35.0.0'
-      - run: gradle :android:app:assembleDebug --no-daemon
-      - uses: actions/upload-artifact@v4
-        with: {name: dart-flutter-learning-lab-android-debug, path: android/app/build/outputs/apk/debug/*.apk}
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: android-actions/setup-android@v4
+        with:
+          packages: 'platform-tools'
+
+      - uses: gradle/actions/setup-gradle@v6
+        with:
+          gradle-version: '8.13'
+
+      - name: Install Android SDK components
+        run: |
+          sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+
+      - name: Build Android APK
+        run: |
+          gradle :android:app:assembleDebug --no-daemon
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: dart-flutter-learning-lab-android-debug
+          path: android/app/build/outputs/apk/debug/*.apk
+
   flutter:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
+
       - uses: subosito/flutter-action@v2
-        with: {flutter-version: '3.47.5', channel: stable, cache: true}
-      - working-directory: flutter
+        with:
+          flutter-version: '3.47.5'
+          channel: stable
+          cache: true
+
+      - name: Get Flutter dependencies
+        working-directory: flutter
         run: flutter pub get
-      - working-directory: flutter
+
+      - name: Analyze Flutter
+        working-directory: flutter
         run: flutter analyze
-      - working-directory: flutter
+
+      - name: Test Flutter
+        working-directory: flutter
         run: flutter test
